@@ -1,0 +1,87 @@
+// Component model
+//
+// Board
+//  Controls
+//   StartStop
+//   Clear
+//  Cells
+//   Cell
+
+
+var Board = React.createClass({
+  render: function() {
+    return (
+      <div className="board" id="board">
+        <Controls />
+        <Cells />
+      </div>
+    );
+  }
+});
+
+var Controls = React.createClass({
+  render: function() {
+    return (
+      <div className="controls" id="controls">
+        <StartStop/>
+        <Clear />
+      </div>
+    );
+  }
+});
+
+var StartStop = React.createClass({
+  render: function() {
+    return (
+      <div className="btnContainer col-xs-6">
+        <button className="startstop">
+          Start
+        </button>
+       </div>
+    );
+  }
+});
+
+var Clear = React.createClass({
+  render: function() {
+    return (
+      <div className="btnContainer col-xs-6">
+        <button className="clear">
+          Clear
+        </button>        
+       </div>
+    );
+  }
+});
+
+var Cells = React.createClass({
+  render: function() {
+    var cells = [];
+    for(var i = 0; i < 50; i++)
+      cells.push(<Cell />);
+    return (
+      <div className="cells" id="cells">
+        {cells}
+      </div>
+    );
+  }
+});
+
+var Cell = React.createClass({
+  getClasses: function(str) {
+    if(Math.random > .5)
+      return str + " live";
+    else
+      return str + " dead";
+  },
+  render: function() {
+    return (
+      <div className={this.getClasses("cell")} ></div>
+    );
+  }
+});
+
+ReactDOM.render(<Board />, document.getElementById("app"));
+
+
+
