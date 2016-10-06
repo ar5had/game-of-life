@@ -1,19 +1,35 @@
 // Component model
 //
 // Board
+//  Logo
 //  Controls
 //   StartStop
 //   Clear
 //  Cells
 //   Cell
 
-
 var Board = React.createClass({
+  getInitialState: function() {
+    return {}
+  },
   render: function() {
     return (
-      <div className="board" id="board">
-        <Controls />
-        <Cells />
+      <div className="board" id="board">  
+        <div id="panel">
+          <Logo />
+          <Controls />
+        </div>
+        <Cells clear={this.state.clear}/>
+      </div>
+    );
+  }
+});
+
+var Logo = React.createClass({
+  render: function() {
+    return(
+      <div id="logoContainer">
+        <h3 id="logo">Game of <span>Life</span></h3>  
       </div>
     );
   }
@@ -23,19 +39,40 @@ var Controls = React.createClass({
   render: function() {
     return (
       <div className="controls" id="controls">
-        <StartStop/>
-        <Clear />
+        <div className="controlsContainer">
+          <GenerationDisplay />
+          <StartStop/>
+          <Clear onClick={this.props.clear} />
+        </div>
+      </div>
+    );
+  }
+});
+
+var GenerationDisplay = React.createClass ({
+  render: function() {
+    return (
+      <div className="gDisplay col-xs-8">
+        <h4 className="generationText">Generation :
+          <span id="count">
+            000000
+          </span>  
+        </h4>
       </div>
     );
   }
 });
 
 var StartStop = React.createClass({
+  onClick : function(e) {
+    $(".startstop").toggleClass("on");
+    $(".startstop > span").toggleClass("glyphicon-pause");  
+  },
   render: function() {
     return (
-      <div className="btnContainer col-xs-6">
-        <button className="startstop">
-          Start
+      <div className="btnContainer col-xs-2">
+        <button className="startstop transition" onClick={this.onClick}>
+          <span className="glyphicon glyphicon-play" /> 
         </button>
        </div>
     );
@@ -43,11 +80,17 @@ var StartStop = React.createClass({
 });
 
 var Clear = React.createClass({
+  onClick : function(e) {
+    $(".startstop").removeClass("on");
+    $(".startstop>span")
+      .removeClass("glyphicon-pause");
+    this.props.onClick();
+  },
   render: function() {
     return (
-      <div className="btnContainer col-xs-6">
-        <button className="clear">
-          Clear
+      <div className="btnContainer col-xs-2">
+        <button className="clear transition on" onClick={this.onClick}>
+          <span className="glyphicon glyphicon-stop" />
         </button>        
        </div>
     );
@@ -55,9 +98,28 @@ var Clear = React.createClass({
 });
 
 var Cells = React.createClass({
+  componentDidMount: function(){
+    var genrationIntvl = setInterval(function(){
+      var count = $("#count").html();
+      count = +count;
+      count++;
+      var zeros = 6 - String(count).length;
+      var prefix ="";
+      while (prefix.length < zeros)
+        prefix += "0"
+      $("#count").html(prefix+count);
+    },200);
+  },
   render: function() {
     var cells = [];
-    for(var i = 0; i < 50; i++)
+    var width = document.querySelector("body").offsetWidth;
+    var height = document.querySelector("body").offsetHeight - 125;
+    var count = Math.floor(width / 10) * Math.floor(height / 10);
+    if(document.querySelector(".cells")) {  
+      document.querySelector(".cells").style.width = width;
+      document.querySelector(".cells").style.height = height;
+    }   
+    for(var i = 1; i <= count; i++)
       cells.push(<Cell />);
     return (
       <div className="cells" id="cells">
@@ -69,14 +131,18 @@ var Cells = React.createClass({
 
 var Cell = React.createClass({
   getClasses: function(str) {
-    if(Math.random > .5)
-      return str + " live";
+    if(Math.random() > .5)
+      return str;
     else
       return str + " dead";
   },
+  onClick: function(e){
+      $(e.currentTarget)
+        .toggleClass("dead");
+  },
   render: function() {
     return (
-      <div className={this.getClasses("cell")} ></div>
+      <div className={this.getClasses("cell")} onClick={this.onClick}></div>
     );
   }
 });
