@@ -1,5 +1,3 @@
-"use strict";
-
 // Component model
 //
 // Board
@@ -10,87 +8,116 @@
 //   Cell
 
 var Board = React.createClass({
-  displayName: "Board",
-
-  render: function render() {
-    return React.createElement(
-      "div",
-      { className: "board", id: "board" },
-      React.createElement(Controls, null),
-      React.createElement(Cells, null)
+  render: function() {
+    return (
+      <div className="board" id="board">
+        <Cells />
+      </div>
     );
   }
 });
 
 var Controls = React.createClass({
-  displayName: "Controls",
+  render: function() {
+    return (
+      <div className="controls" id="controls">
+        <GenerationDisplay />
+        <StartStop/>
+        <Clear onClick={this.props.onClear}/>
+      </div>
+    );
+  }
+});
 
-  render: function render() {
-    return React.createElement(
-      "div",
-      { className: "controls", id: "controls" },
-      React.createElement(StartStop, null),
-      React.createElement(Clear, null)
+var GenerationDisplay = React.createClass ({
+  render: function() {
+    return (
+      <div className="gDisplay col-xs-8">
+        <h4 className="generationText">Generation :
+          <span id="count">
+            12345
+          </span>
+        </h4>
+      </div>
     );
   }
 });
 
 var StartStop = React.createClass({
-  displayName: "StartStop",
+  onClick : function(e) {
 
-  render: function render() {
-    return React.createElement(
-      "div",
-      { className: "btnContainer col-xs-6" },
-      React.createElement(
-        "button",
-        { className: "startstop" },
-        "Start"
-      )
+      if($(".startstop").html() ==="start")
+        $(".startstop").html("stop");
+      else
+          $(".startstop").html("start");
+
+
+  },
+  render: function() {
+    return (
+      <div className="btnContainer col-xs-2">
+        <button className="startstop" onClick={this.onClick}>
+          start
+        </button>
+       </div>
     );
   }
 });
 
 var Clear = React.createClass({
-  displayName: "Clear",
+  onClick : function(e) {
 
-  render: function render() {
-    return React.createElement(
-      "div",
-      { className: "btnContainer col-xs-6" },
-      React.createElement(
-        "button",
-        { className: "clear" },
-        "Clear"
-      )
+    this.props.onClick();
+  },
+  render: function() {
+    return (
+      <div className="btnContainer col-xs-2">
+        <button className="clear transitionFlickrText transitionFlickrBlock" onClick={this.onClick}>
+          Clear
+        </button>
+       </div>
     );
   }
 });
 
 var Cells = React.createClass({
-  displayName: "Cells",
+  render: function() {
 
-  render: function render() {
     var cells = [];
-    for (var i = 0; i < 50; i++) {
-      cells.push(React.createElement(Cell, null));
-    }return React.createElement(
-      "div",
-      { className: "cells", id: "cells" },
-      cells
+    var width = document.querySelector("body").offsetWidth;
+    var height = document.querySelector("body").offsetHeight;
+    var count = Math.floor(width / 10) * Math.floor(height / 10);
+
+    if(document.querySelector(".cells")) {
+      document.querySelector(".cells").style.width = width;
+      document.querySelector(".cells").style.height = height;
+    }
+
+    for(var i = 1; i <= count; i++)
+      cells.push(<Cell />);
+    return (
+      <div className="cells transitionFlickrBlock" id="cells">
+        {cells}
+      </div>
     );
   }
 });
 
 var Cell = React.createClass({
-  displayName: "Cell",
-
-  getClasses: function getClasses(str) {
-    if (Math.random > .5) return str + " live";else return str + " dead";
+  getClasses: function(str) {
+    if(Math.random() > .5)
+      return str;
+    else
+      return str + " dead";
   },
-  render: function render() {
-    return React.createElement("div", { className: this.getClasses("cell") });
+  onClick: function(e){
+    $(e.currentTarget).toggleClass("dead");
+  },
+  render: function() {
+    return (
+      <div className={this.getClasses("cell")} onClick={this.onClick}></div>
+    );
   }
 });
 
-ReactDOM.render(React.createElement(Board, null), document.getElementById("app"));
+ReactDOM.render(<Board />, document.getElementById("app"));
