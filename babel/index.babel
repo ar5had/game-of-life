@@ -14,7 +14,7 @@ var Board = React.createClass({
   },
   render: function() {
     return (
-      <div className="board" id="board">  
+      <div className="board" id="board">
         <div id="panel">
           <Logo />
           <Controls />
@@ -29,7 +29,7 @@ var Logo = React.createClass({
   render: function() {
     return(
       <div id="logoContainer">
-        <h3 id="logo">Game of <span>Life</span></h3>  
+        <h3 id="logo">Game of <span>Life</span></h3>
       </div>
     );
   }
@@ -56,7 +56,7 @@ var GenerationDisplay = React.createClass ({
         <h4 className="generationText">Generation :
           <span id="count">
             000000
-          </span>  
+          </span>
         </h4>
       </div>
     );
@@ -66,13 +66,13 @@ var GenerationDisplay = React.createClass ({
 var StartStop = React.createClass({
   onClick : function(e) {
     $(".startstop").toggleClass("on");
-    $(".startstop > span").toggleClass("glyphicon-pause");  
+    $(".startstop > span").toggleClass("glyphicon-pause");
   },
   render: function() {
     return (
       <div className="btnContainer col-xs-2">
         <button className="startstop transition" onClick={this.onClick}>
-          <span className="glyphicon glyphicon-play" /> 
+          <span className="glyphicon glyphicon-play" />
         </button>
        </div>
     );
@@ -91,7 +91,7 @@ var Clear = React.createClass({
       <div className="btnContainer col-xs-2">
         <button className="clear transition on" onClick={this.onClick}>
           <span className="glyphicon glyphicon-stop" />
-        </button>        
+        </button>
        </div>
     );
   }
@@ -115,10 +115,10 @@ var Cells = React.createClass({
     var width = document.querySelector("body").offsetWidth;
     var height = document.querySelector("body").offsetHeight - 125;
     var count = Math.floor(width / 10) * Math.floor(height / 10);
-    if(document.querySelector(".cells")) {  
+    if(document.querySelector(".cells")) {
       document.querySelector(".cells").style.width = width;
       document.querySelector(".cells").style.height = height;
-    }   
+    }
     for(var i = 1; i <= count; i++)
       cells.push(<Cell />);
     return (
@@ -148,6 +148,3 @@ var Cell = React.createClass({
 });
 
 ReactDOM.render(<Board />, document.getElementById("app"));
-
-
-

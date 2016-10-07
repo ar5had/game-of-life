@@ -1,3 +1,4 @@
+
 html {
   font-size: 1px;
 }
@@ -92,8 +93,25 @@ body {
 
 .btnContainer {
   text-align: right;
-  padding: 0;
+
+html{
+  font-size: 1;
 }
+
+*, h1, h2, h3, h4, h5, h6, p, button, span {
+  font-family: 'quicksand', sans-serif !important;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  font-weight: 700;
+}
+
+body {
+  background: #Fff;
+  height: 100vh;
+  width: 100vw;
+}
+
 
 button {
   font-size: 15px;
@@ -142,4 +160,17 @@ button > span {
 .cell:hover {
   cursor: pointer;
   background: #e91e63;
+
+.cells {
+  overflow: hidden;
+  margin: auto;
+}
+
+
+.cell{
+  width: 8px;
+  height: 8px;
+  background: #eee;
+  margin: 1px;
+  float: left;
 }
