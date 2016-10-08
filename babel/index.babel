@@ -9,30 +9,28 @@
 //   Cell
 
 var Board = React.createClass({
-  getInitialState: function() {
-    return {};
-  }, 
-  componentDidMount: function(){
-    
+  updateDimensions: function() {
+    this.setState({width: $(window).width(), height: $(window).height()});
+    this.refs.cells.screenResize();
   },
-  startGame: function() {
-    this.refs.cells.startGame();
+  componentDidMount: function(){
+    window.addEventListener("resize", this.updateDimensions);
+  },
+  playOrPause: function(shouldPlay) {
+    if(shouldPlay)
+      this.refs.cells.startGame();
+    else
+      this.refs.cells.pauseGame();
   },
   clearBoard: function() {
     this.refs.cells.resetCells();
   },
-  resetGeneration: function() {
-    clearInterval(this.generationInterval);
-    $("#count").html("000000");
-  },
   render: function() {
-    if(this.state.clear)
-      this.resetGeneration();
     return (
       <div className="board" id="board">  
         <div id="panel">
           <Logo />
-          <Controls clear={this.clearBoard} startGame={this.startGame}/>
+          <Controls clear={this.clearBoard} playOrPause={this.playOrPause}/>
         </div>
         <Cells ref="cells" />
       </div>
@@ -56,7 +54,7 @@ var Controls = React.createClass({
       <div className="controls" id="controls">
         <div className="controlsContainer">
           <GenerationDisplay />
-          <StartStop onClick={this.props.startGame}/>
+          <StartStop onClick={this.props.playOrPause}/>
           <Clear onClick={this.props.clear} />
         </div>
       </div>
@@ -82,13 +80,16 @@ var StartStop = React.createClass({
   onClick : function(e) {
     $(".startstop").toggleClass("on");
     $(".startstop > span").toggleClass("glyphicon-pause"); 
-    this.props.onClick();
+    if($(".startstop").hasClass("on"))
+      this.props.onClick(true);
+    else
+      this.props.onClick(false);
   },
   render: function() {
     return (
       <div className="btnContainer col-xs-2">
-        <button className="startstop transition" onClick={this.onClick}>
-          <span className="glyphicon glyphicon-play" /> 
+        <button className="startstop transition on" onClick={this.onClick}>
+          <span className="glyphicon glyphicon-play glyphicon-pause" /> 
         </button>
        </div>
     );
@@ -126,7 +127,7 @@ var Cells = React.createClass({
           cellStates[i][j] = false;
       }  
     }
-    return {clear: true, cellStates: cellStates};
+    return {cellStates: cellStates};
   }, 
   componentDidMount: function(){
     this.startGame();
@@ -134,7 +135,6 @@ var Cells = React.createClass({
   startGame: function() {
     var parent_this = this;
     this.generationInterval = setInterval(function(){
-      parent_this.updateCells();
       var count = $("#count").html();
       count = +count;
       count++;
@@ -143,17 +143,21 @@ var Cells = React.createClass({
       while (prefix.length < zeros)
         prefix += "0"
       $("#count").html(prefix+count);
-    },200);
+      parent_this.updateCells();
+    },100);
+  },
+  pauseGame: function() {
+    this.resetGeneration();
   },
   updateCells: function() {
     var cellStates=[];
     for(var i = 0; i < this.rows; i++) {
-      cellStates[i] = [];
+      cellStates.push([]);
       for(var j = 0; j < this.cols; j++) {
         var top = (i > 0) ? i - 1: this.rows - 1;
-        var bottom = (i < this.rows - 1) ? i + 1: 0;
+        var bottom = (i < (this.rows - 1)) ? i + 1: 0;
         var left = (j > 0) ? j - 1: this.cols - 1;
-        var right = (j < this.cols - 1) ? j + 1: 0;
+        var right = (j < (this.cols - 1)) ? j + 1: 0;
         // neighbours count
         var count = 0;
         //checking top
@@ -181,17 +185,20 @@ var Cells = React.createClass({
         if(this.state.cellStates[bottom][right])
           count++;
         
-        if(count === 2 || count === 3)
+        if((count === 2 || count === 3) && this.state.cellStates[i][j])
+          cellStates[i][j] = true;
+        else if(count === 3 && !this.state.cellStates[i][j])
           cellStates[i][j] = true;
         else
           cellStates[i][j] = false;
-        //console.log(this.state.cellStates);
-        console.log("row col count", i, j, count);
+        
       }        
     }
-    this.setState({cellStates: cellStates});
     if(document.querySelectorAll(".dead").length === (this.rows * this.cols))
       $(".clear").click();
+    else
+      this.setState({cellStates: cellStates});
+       
   },
   clearCells: function() {
     var cellStates = [];
@@ -213,12 +220,10 @@ var Cells = React.createClass({
     //   document.querySelector(".cells").style.width = width;
     //   document.querySelector(".cells").style.height = height;
     // }   
-    this.rows = Math.floor(width/10);
-    this.cols = Math.floor(height/10);
+    this.cols = Math.floor(width/10);
+    this.rows = Math.floor(height/10);
   },
   resetCells: function() {
-    console.log("reset cells called");
-    
     this.resetGeneration();
     $("#count").html("000000");
     this.clearCells();
@@ -226,6 +231,20 @@ var Cells = React.createClass({
   cellClicked : function(row, col, val) {
     var cellStates = this.state.cellStates;
     cellStates[row][col] = val;
+    this.setState({cellStates: cellStates});
+  },
+  screenResize: function() {
+    this.getScreenDimensions();
+    var cellStates = [];
+    for(var i = 0; i < this.rows; i++) {
+      cellStates[i] = [];
+      for(var j = 0; j < this.cols; j++) {
+        if(Math.random() > .5)
+          cellStates[i][j] = true;
+        else
+          cellStates[i][j] = false;
+      }  
+    }
     this.setState({cellStates: cellStates});
   },
   render: function() {
@@ -271,5 +290,5 @@ var Cell = React.createClass({
 ReactDOM.render(<Board />, document.getElementById("app"));
 
 
-// error 1 - generation not setting to zero
+
 

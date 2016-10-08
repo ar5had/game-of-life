@@ -13,22 +13,20 @@
 var Board = React.createClass({
   displayName: "Board",
 
-  getInitialState: function getInitialState() {
-    return {};
+  updateDimensions: function updateDimensions() {
+    this.setState({ width: $(window).width(), height: $(window).height() });
+    this.refs.cells.screenResize();
   },
-  componentDidMount: function componentDidMount() {},
-  startGame: function startGame() {
-    this.refs.cells.startGame();
+  componentDidMount: function componentDidMount() {
+    window.addEventListener("resize", this.updateDimensions);
+  },
+  playOrPause: function playOrPause(shouldPlay) {
+    if (shouldPlay) this.refs.cells.startGame();else this.refs.cells.pauseGame();
   },
   clearBoard: function clearBoard() {
     this.refs.cells.resetCells();
   },
-  resetGeneration: function resetGeneration() {
-    clearInterval(this.generationInterval);
-    $("#count").html("000000");
-  },
   render: function render() {
-    if (this.state.clear) this.resetGeneration();
     return React.createElement(
       "div",
       { className: "board", id: "board" },
@@ -36,7 +34,7 @@ var Board = React.createClass({
         "div",
         { id: "panel" },
         React.createElement(Logo, null),
-        React.createElement(Controls, { clear: this.clearBoard, startGame: this.startGame })
+        React.createElement(Controls, { clear: this.clearBoard, playOrPause: this.playOrPause })
       ),
       React.createElement(Cells, { ref: "cells" })
     );
@@ -75,7 +73,7 @@ var Controls = React.createClass({
         "div",
         { className: "controlsContainer" },
         React.createElement(GenerationDisplay, null),
-        React.createElement(StartStop, { onClick: this.props.startGame }),
+        React.createElement(StartStop, { onClick: this.props.playOrPause }),
         React.createElement(Clear, { onClick: this.props.clear })
       )
     );
@@ -109,7 +107,7 @@ var StartStop = React.createClass({
   onClick: function onClick(e) {
     $(".startstop").toggleClass("on");
     $(".startstop > span").toggleClass("glyphicon-pause");
-    this.props.onClick();
+    if ($(".startstop").hasClass("on")) this.props.onClick(true);else this.props.onClick(false);
   },
   render: function render() {
     return React.createElement(
@@ -117,8 +115,8 @@ var StartStop = React.createClass({
       { className: "btnContainer col-xs-2" },
       React.createElement(
         "button",
-        { className: "startstop transition", onClick: this.onClick },
-        React.createElement("span", { className: "glyphicon glyphicon-play" })
+        { className: "startstop transition on", onClick: this.onClick },
+        React.createElement("span", { className: "glyphicon glyphicon-play glyphicon-pause" })
       )
     );
   }
@@ -157,7 +155,7 @@ var Cells = React.createClass({
         if (Math.random() > .5) cellStates[i][j] = true;else cellStates[i][j] = false;
       }
     }
-    return { clear: true, cellStates: cellStates };
+    return { cellStates: cellStates };
   },
   componentDidMount: function componentDidMount() {
     this.startGame();
@@ -165,7 +163,6 @@ var Cells = React.createClass({
   startGame: function startGame() {
     var parent_this = this;
     this.generationInterval = setInterval(function () {
-      parent_this.updateCells();
       var count = $("#count").html();
       count = +count;
       count++;
@@ -174,12 +171,16 @@ var Cells = React.createClass({
       while (prefix.length < zeros) {
         prefix += "0";
       }$("#count").html(prefix + count);
-    }, 200);
+      parent_this.updateCells();
+    }, 100);
+  },
+  pauseGame: function pauseGame() {
+    this.resetGeneration();
   },
   updateCells: function updateCells() {
     var cellStates = [];
     for (var i = 0; i < this.rows; i++) {
-      cellStates[i] = [];
+      cellStates.push([]);
       for (var j = 0; j < this.cols; j++) {
         var top = i > 0 ? i - 1 : this.rows - 1;
         var bottom = i < this.rows - 1 ? i + 1 : 0;
@@ -204,13 +205,10 @@ var Cells = React.createClass({
         //checking bottom-right
         if (this.state.cellStates[bottom][right]) count++;
 
-        if (count === 2 || count === 3) cellStates[i][j] = true;else cellStates[i][j] = false;
-        //console.log(this.state.cellStates);
-        console.log("row col count", i, j, count);
+        if ((count === 2 || count === 3) && this.state.cellStates[i][j]) cellStates[i][j] = true;else if (count === 3 && !this.state.cellStates[i][j]) cellStates[i][j] = true;else cellStates[i][j] = false;
       }
     }
-    this.setState({ cellStates: cellStates });
-    if (document.querySelectorAll(".dead").length === this.rows * this.cols) $(".clear").click();
+    if (document.querySelectorAll(".dead").length === this.rows * this.cols) $(".clear").click();else this.setState({ cellStates: cellStates });
   },
   clearCells: function clearCells() {
     var cellStates = [];
@@ -232,12 +230,10 @@ var Cells = React.createClass({
     //   document.querySelector(".cells").style.width = width;
     //   document.querySelector(".cells").style.height = height;
     // }  
-    this.rows = Math.floor(width / 10);
-    this.cols = Math.floor(height / 10);
+    this.cols = Math.floor(width / 10);
+    this.rows = Math.floor(height / 10);
   },
   resetCells: function resetCells() {
-    console.log("reset cells called");
-
     this.resetGeneration();
     $("#count").html("000000");
     this.clearCells();
@@ -245,6 +241,17 @@ var Cells = React.createClass({
   cellClicked: function cellClicked(row, col, val) {
     var cellStates = this.state.cellStates;
     cellStates[row][col] = val;
+    this.setState({ cellStates: cellStates });
+  },
+  screenResize: function screenResize() {
+    this.getScreenDimensions();
+    var cellStates = [];
+    for (var i = 0; i < this.rows; i++) {
+      cellStates[i] = [];
+      for (var j = 0; j < this.cols; j++) {
+        if (Math.random() > .5) cellStates[i][j] = true;else cellStates[i][j] = false;
+      }
+    }
     this.setState({ cellStates: cellStates });
   },
   render: function render() {
@@ -281,5 +288,3 @@ var Cell = React.createClass({
 });
 
 ReactDOM.render(React.createElement(Board, null), document.getElementById("app"));
-
-// error 1 - generation not setting to zero

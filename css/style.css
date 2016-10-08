@@ -22,7 +22,7 @@ body {
   background: #fff;
   height: 100vh;
   width: 100vw;
-  border-bottom: solid 1px #e91e63;
+  border-bottom: solid 1px #626a98;
 }
 
 #panel {
@@ -71,19 +71,26 @@ body {
 }
 
 .generationText {
-  border: solid 2px #e91e63;
-  background: #e91e63;
+  border: solid 2px #626a98;
+  background: #626a98;
   float: left;
+  font-weight: 700;
 }
 
 .generationText, .generationText > span {
-  line-height: 38px;
+  line-height: 36px;
   font-size: 15px;
   color: #fff;
   border-radius: 5px;
   text-align: left;
   padding: 0 0 0 20px;
   min-width: 202px;
+}
+
+@-moz-document url-prefix() {
+  .generationText {
+    min-width: 214px
+  }
 }
 
 .generationText > span {
@@ -100,14 +107,14 @@ button {
   font-size: 15px;
   width: 70px;
   border-radius: 5px;
-  background: #e91e63;
+  background: #626a98;
   border: none;
   padding: 6px;
   margin: 1px 0;
   cursor: pointer;
   background: none;
-  color: #e91e63;
-  border: solid 3px #e91e63;
+  color: #626a98;
+  border: solid 3px #626a98;
 }
 
 button:active {
@@ -119,7 +126,7 @@ button > span {
 }
 
 .on {
-  background: #e91e63;
+  background: #626a98;
   color: #fff;
 }
 
@@ -128,10 +135,10 @@ button > span {
 }
 
 .cell {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   background: #9498BA;
-  margin: 1px;
+  border: solid 1px #fff;
   float: left;
 }
 
@@ -141,5 +148,22 @@ button > span {
 
 .cell:hover {
   cursor: pointer;
-  background: #e91e63;
+  background: #626a98;
+}
+
+@media screen and (max-width: 699px) {
+  #logo, #logo > span {
+    font-size: 30px;
+  }
+
+  .generationText {
+    min-width: 173px;
+    padding-left: 10px;
+    font-size: 14px;
+  }
+
+  .startstop, .clear {
+    width: 50px;
+    font-size: 14px;
+  }
 }
