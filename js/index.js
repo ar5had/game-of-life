@@ -172,7 +172,7 @@ var Cells = React.createClass({
         prefix += "0";
       }$("#count").html(prefix + count);
       parent_this.updateCells();
-    }, 100);
+    }, 20);
   },
   pauseGame: function pauseGame() {
     this.resetGeneration();
@@ -226,10 +226,6 @@ var Cells = React.createClass({
   getScreenDimensions: function getScreenDimensions() {
     var width = document.querySelector("body").offsetWidth;
     var height = document.querySelector("body").offsetHeight - 125;
-    // if(document.querySelector(".cells")) { 
-    //   document.querySelector(".cells").style.width = width;
-    //   document.querySelector(".cells").style.height = height;
-    // }  
     this.cols = Math.floor(width / 10);
     this.rows = Math.floor(height / 10);
   },
@@ -283,7 +279,7 @@ var Cell = React.createClass({
     this.props.onClick(row, col, val);
   },
   render: function render() {
-    return React.createElement("div", { className: this.getClasses("cell transition"), onClick: this.onClick, "data-row": this.props.row, "data-col": this.props.col });
+    return React.createElement("div", { className: this.getClasses("cell"), onClick: this.onClick, "data-row": this.props.row, "data-col": this.props.col });
   }
 });
 

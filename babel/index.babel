@@ -27,7 +27,7 @@ var Board = React.createClass({
   },
   render: function() {
     return (
-      <div className="board" id="board">  
+      <div className="board" id="board">
         <div id="panel">
           <Logo />
           <Controls clear={this.clearBoard} playOrPause={this.playOrPause}/>
@@ -42,7 +42,7 @@ var Logo = React.createClass({
   render: function() {
     return(
       <div id="logoContainer">
-        <h3 id="logo">Game of <span>Life</span></h3>  
+        <h3 id="logo">Game of <span>Life</span></h3>
       </div>
     );
   }
@@ -69,7 +69,7 @@ var GenerationDisplay = React.createClass ({
         <h4 className="generationText">Generation :
           <span id="count">
             000000
-          </span>  
+          </span>
         </h4>
       </div>
     );
@@ -79,7 +79,7 @@ var GenerationDisplay = React.createClass ({
 var StartStop = React.createClass({
   onClick : function(e) {
     $(".startstop").toggleClass("on");
-    $(".startstop > span").toggleClass("glyphicon-pause"); 
+    $(".startstop > span").toggleClass("glyphicon-pause");
     if($(".startstop").hasClass("on"))
       this.props.onClick(true);
     else
@@ -89,7 +89,7 @@ var StartStop = React.createClass({
     return (
       <div className="btnContainer col-xs-2">
         <button className="startstop transition on" onClick={this.onClick}>
-          <span className="glyphicon glyphicon-play glyphicon-pause" /> 
+          <span className="glyphicon glyphicon-play glyphicon-pause" />
         </button>
        </div>
     );
@@ -108,7 +108,7 @@ var Clear = React.createClass({
       <div className="btnContainer col-xs-2">
         <button className="clear transition on" onClick={this.onClick}>
           <span className="glyphicon glyphicon-stop" />
-        </button>        
+        </button>
        </div>
     );
   }
@@ -125,10 +125,10 @@ var Cells = React.createClass({
           cellStates[i][j] = true;
         else
           cellStates[i][j] = false;
-      }  
+      }
     }
     return {cellStates: cellStates};
-  }, 
+  },
   componentDidMount: function(){
     this.startGame();
   },
@@ -144,7 +144,7 @@ var Cells = React.createClass({
         prefix += "0"
       $("#count").html(prefix+count);
       parent_this.updateCells();
-    },100);
+    },20);
   },
   pauseGame: function() {
     this.resetGeneration();
@@ -184,21 +184,21 @@ var Cells = React.createClass({
         //checking bottom-right
         if(this.state.cellStates[bottom][right])
           count++;
-        
+
         if((count === 2 || count === 3) && this.state.cellStates[i][j])
           cellStates[i][j] = true;
         else if(count === 3 && !this.state.cellStates[i][j])
           cellStates[i][j] = true;
         else
           cellStates[i][j] = false;
-        
-      }        
+
+      }
     }
     if(document.querySelectorAll(".dead").length === (this.rows * this.cols))
       $(".clear").click();
     else
       this.setState({cellStates: cellStates});
-       
+
   },
   clearCells: function() {
     var cellStates = [];
@@ -206,7 +206,7 @@ var Cells = React.createClass({
       cellStates[i] = [];
       for(var j = 0; j < this.cols; j++) {
         cellStates[i][j] = false;
-      }  
+      }
     }
     this.setState({cellStates: cellStates});
   },
@@ -216,10 +216,6 @@ var Cells = React.createClass({
   getScreenDimensions: function() {
     var width = document.querySelector("body").offsetWidth;
     var height = document.querySelector("body").offsetHeight - 125;
-    // if(document.querySelector(".cells")) {  
-    //   document.querySelector(".cells").style.width = width;
-    //   document.querySelector(".cells").style.height = height;
-    // }   
     this.cols = Math.floor(width/10);
     this.rows = Math.floor(height/10);
   },
@@ -243,7 +239,7 @@ var Cells = React.createClass({
           cellStates[i][j] = true;
         else
           cellStates[i][j] = false;
-      }  
+      }
     }
     this.setState({cellStates: cellStates});
   },
@@ -255,7 +251,7 @@ var Cells = React.createClass({
           cells.push(<Cell dead={false} row={i} col={j} onClick={this.cellClicked}/>);
         else
           cells.push(<Cell dead={true} row={i} col={j} onClick={this.cellClicked}/>);
-      }  
+      }
     }
     return (
       <div className="cells" id="cells">
@@ -282,13 +278,9 @@ var Cell = React.createClass({
   },
   render: function() {
     return (
-      <div className={this.getClasses("cell transition")} onClick={this.onClick} data-row={this.props.row} data-col={this.props.col}></div>
+      <div className={this.getClasses("cell")} onClick={this.onClick} data-row={this.props.row} data-col={this.props.col}></div>
     );
   }
 });
 
 ReactDOM.render(<Board />, document.getElementById("app"));
-
-
-
-

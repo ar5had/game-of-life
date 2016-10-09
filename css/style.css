@@ -148,7 +148,7 @@ button > span {
 
 .cell:hover {
   cursor: pointer;
-  background: #626a98;
+  background: #444;
 }
 
 @media screen and (max-width: 699px) {
